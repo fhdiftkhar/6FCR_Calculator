@@ -1,58 +1,423 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Car Rental Profit Calculator</title>
-  <style>
-    body { font-family: Arial; margin: 20px; }
-    input, button { padding: 8px; margin: 5px; }
-    #results { background: #f5f5f5; padding: 15px; margin-top: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual-Mode Car Rental Calculator</title>
+    <style>
+        :root {
+            --black: #121212;
+            --dark-pink: #e83d84;
+            --light-pink: #ff7eb9;
+            --gray: #2a2a2a;
+            --light-gray: #444;
+            --text: #f5f5f5;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--black);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        h1 {
+            color: var(--light-pink);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: var(--light-pink);
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+        
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            background: var(--gray);
+            border-radius: 50px;
+            padding: 5px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .toggle-btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-btn.active {
+            background: var(--dark-pink);
+            color: white;
+        }
+        
+        .calculator {
+            background: var(--gray);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .calculator.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: var(--light-pink);
+            width: 100%;
+            text-align: center;
+        }
+        
+        input {
+            width: 100%;
+            max-width: 300px;
+            padding: 0.75rem 1rem;
+            background: var(--light-gray);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: border 0.3s;
+            text-align: center;
+            margin: 0 auto;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--dark-pink);
+        }
+        
+        button.calculate {
+            background: var(--dark-pink);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            margin: 2rem auto 0;
+            display: block;
+            transition: all 0.3s;
+        }
+        
+        button.calculate:hover {
+            background: var(--light-pink);
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 4px solid var(--dark-pink);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .result-label {
+            font-weight: 500;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: var(--light-pink);
+        }
+        
+        .explanation {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 4px solid var(--light-pink);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .explanation h3 {
+            color: var(--light-pink);
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .explanation p {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-  <h2>Car Rental Profit Calculator</h2>
-  <div>
-    <label>Purchase Price ($):</label>
-    <input type="number" id="price" value="25000"><br>
-    <label>Daily Rental Rate ($):</label>
-    <input type="number" id="dailyRate" value="50"><br>
-    <label>Utilization Rate (%):</label>
-    <input type="number" id="utilization" value="60"><br>
-    <label>Fixed Costs/Month ($) (insurance, etc):</label>
-    <input type="number" id="fixedCosts" value="300"><br>
-    <label>Variable Cost/Mile ($):</label>
-    <input type="number" id="costPerMile" value="0.15" step="0.01"><br>
-    <label>Avg. Miles/Day:</label>
-    <input type="number" id="milesPerDay" value="100"><br>
-    <button onclick="calculate()">Calculate</button>
-  </div>
-  <div id="results"></div>
+    <div class="container">
+        <header>
+            <h1>Car Rental Profit Calculator</h1>
+            <p class="subtitle">Compare profitability models for your rental business</p>
+        </header>
+        
+        <div class="toggle-container">
+            <button class="toggle-btn active" onclick="showCalculator('simple')">Simple Calculator</button>
+            <button class="toggle-btn" onclick="showCalculator('advanced')">Advanced Calculator</button>
+        </div>
+        
+        <!-- Simple Calculator (No per-mile costs) -->
+        <div id="simple-calculator" class="calculator active">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="simple-price">Vehicle Purchase Price ($)</label>
+                    <input type="number" id="simple-price" value="25000">
+                </div>
+                <div class="input-group">
+                    <label for="simple-daily-rate">Daily Rental Rate ($)</label>
+                    <input type="number" id="simple-daily-rate" value="50">
+                </div>
+                <div class="input-group">
+                    <label for="simple-utilization">Utilization Rate (%)</label>
+                    <input type="number" id="simple-utilization" value="60" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="simple-fixed-costs">Fixed Monthly Costs ($)</label>
+                    <input type="number" id="simple-fixed-costs" value="300">
+                </div>
+                <div class="input-group">
+                    <label for="simple-maintenance">Maintenance Buffer ($/month)</label>
+                    <input type="number" id="simple-maintenance" value="150">
+                </div>
+                <div class="input-group">
+                    <label for="simple-resale">Resale Value (3 years, $)</label>
+                    <input type="number" id="simple-resale" value="12500">
+                </div>
+            </div>
+            
+            <button class="calculate" onclick="calculateSimple()">Calculate Profitability</button>
+            
+            <div id="simple-results" class="results" style="display: none;">
+                <h3>Projected Results</h3>
+                <div class="result-item">
+                    <span class="result-label">Monthly Revenue:</span>
+                    <span class="result-value" id="simple-revenue">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Monthly Net Profit:</span>
+                    <span class="result-value" id="simple-profit">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Break-Even Period:</span>
+                    <span class="result-value" id="simple-breakeven">0 months</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">3-Year ROI:</span>
+                    <span class="result-value" id="simple-roi">0%</span>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <h3>Simple Calculator</h3>
+                <p>This version is ideal for unlimited-mileage models where per-mile costs aren't tracked. It uses fixed monthly costs and a maintenance buffer to estimate profitability.</p>
+                <p><strong>Best for:</strong> New businesses, unlimited-mileage rentals, or quick estimates without detailed cost tracking.</p>
+            </div>
+        </div>
+        
+        <!-- Advanced Calculator (With per-mile costs) -->
+        <div id="advanced-calculator" class="calculator">
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="adv-price">Vehicle Purchase Price ($)</label>
+                    <input type="number" id="adv-price" value="25000">
+                </div>
+                <div class="input-group">
+                    <label for="adv-daily-rate">Daily Rental Rate ($)</label>
+                    <input type="number" id="adv-daily-rate" value="50">
+                </div>
+                <div class="input-group">
+                    <label for="adv-utilization">Utilization Rate (%)</label>
+                    <input type="number" id="adv-utilization" value="60" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="adv-fixed-costs">Fixed Monthly Costs ($)</label>
+                    <input type="number" id="adv-fixed-costs" value="300">
+                </div>
+                <div class="input-group">
+                    <label for="adv-cost-mile">Cost Per Mile ($)</label>
+                    <input type="number" id="adv-cost-mile" value="0.15" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="adv-miles-day">Avg. Miles Driven/Day</label>
+                    <input type="number" id="adv-miles-day" value="100">
+                </div>
+                <div class="input-group">
+                    <label for="adv-resale">Resale Value (3 years, $)</label>
+                    <input type="number" id="adv-resale" value="12500">
+                </div>
+            </div>
+            
+            <button class="calculate" onclick="calculateAdvanced()">Calculate Profitability</button>
+            
+            <div id="advanced-results" class="results" style="display: none;">
+                <h3>Projected Results</h3>
+                <div class="result-item">
+                    <span class="result-label">Monthly Revenue:</span>
+                    <span class="result-value" id="adv-revenue">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Variable Costs:</span>
+                    <span class="result-value" id="adv-variable-costs">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Monthly Net Profit:</span>
+                    <span class="result-value" id="adv-profit">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Break-Even Period:</span>
+                    <span class="result-value" id="adv-breakeven">0 months</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">3-Year ROI:</span>
+                    <span class="result-value" id="adv-roi">0%</span>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <h3>Advanced Calculator</h3>
+                <p>This version includes per-mile costs for more accurate projections when you track mileage or have limited-mileage rentals. It calculates variable costs based on estimated daily mileage.</p>
+                <p><strong>Best for:</strong> Established businesses, limited-mileage rentals, or when you have good cost-per-mile data.</p>
+            </div>
+        </div>
+    </div>
 
-  <script>
-    function calculate() {
-      // Get inputs
-      const price = parseFloat(document.getElementById('price').value);
-      const dailyRate = parseFloat(document.getElementById('dailyRate').value);
-      const utilization = parseFloat(document.getElementById('utilization').value) / 100;
-      const fixedCosts = parseFloat(document.getElementById('fixedCosts').value);
-      const costPerMile = parseFloat(document.getElementById('costPerMile').value);
-      const milesPerDay = parseFloat(document.getElementById('milesPerDay').value);
-
-      // Calculations
-      const monthlyRevenue = dailyRate * utilization * 30;
-      const monthlyVariableCosts = milesPerDay * costPerMile * (30 * utilization);
-      const monthlyNetProfit = monthlyRevenue - (fixedCosts + monthlyVariableCosts);
-      const breakEvenMonths = price / monthlyNetProfit;
-      const threeYearROI = ((monthlyNetProfit * 36) - price) / price * 100;
-
-      // Display results
-      document.getElementById('results').innerHTML = `
-        <h3>Results</h3>
-        <p>Monthly Revenue: $${monthlyRevenue.toFixed(2)}</p>
-        <p>Monthly Net Profit: $${monthlyNetProfit.toFixed(2)}</p>
-        <p>Break-Even Period: ${breakEvenMonths.toFixed(1)} months</p>
-        <p>3-Year ROI: ${threeYearROI.toFixed(1)}%</p>
-      `;
-    }
-  </script>
+    <script>
+        // Toggle between calculators
+        function showCalculator(calcType) {
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.calculator').forEach(calc => {
+                calc.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            document.getElementById(calcType + '-calculator').classList.add('active');
+        }
+        
+        // Simple calculator calculations
+        function calculateSimple() {
+            const price = parseFloat(document.getElementById('simple-price').value);
+            const dailyRate = parseFloat(document.getElementById('simple-daily-rate').value);
+            const utilization = parseFloat(document.getElementById('simple-utilization').value) / 100;
+            const fixedCosts = parseFloat(document.getElementById('simple-fixed-costs').value);
+            const maintenance = parseFloat(document.getElementById('simple-maintenance').value);
+            const resale = parseFloat(document.getElementById('simple-resale').value);
+            
+            const monthlyRevenue = dailyRate * utilization * 30;
+            const totalMonthlyCosts = fixedCosts + maintenance;
+            const monthlyNetProfit = monthlyRevenue - totalMonthlyCosts;
+            const breakEvenMonths = price / monthlyNetProfit;
+            const roi = ((monthlyNetProfit * 36) + resale - price) / price * 100;
+            
+            document.getElementById('simple-revenue').textContent = '$' + monthlyRevenue.toFixed(2);
+            document.getElementById('simple-profit').textContent = '$' + monthlyNetProfit.toFixed(2);
+            document.getElementById('simple-breakeven').textContent = breakEvenMonths.toFixed(1) + ' months';
+            document.getElementById('simple-roi').textContent = roi.toFixed(1) + '%';
+            document.getElementById('simple-results').style.display = 'block';
+        }
+        
+        // Advanced calculator calculations
+        function calculateAdvanced() {
+            const price = parseFloat(document.getElementById('adv-price').value);
+            const dailyRate = parseFloat(document.getElementById('adv-daily-rate').value);
+            const utilization = parseFloat(document.getElementById('adv-utilization').value) / 100;
+            const fixedCosts = parseFloat(document.getElementById('adv-fixed-costs').value);
+            const costPerMile = parseFloat(document.getElementById('adv-cost-mile').value);
+            const milesPerDay = parseFloat(document.getElementById('adv-miles-day').value);
+            const resale = parseFloat(document.getElementById('adv-resale').value);
+            
+            const monthlyRevenue = dailyRate * utilization * 30;
+            const variableCosts = milesPerDay * costPerMile * (30 * utilization);
+            const monthlyNetProfit = monthlyRevenue - (fixedCosts + variableCosts);
+            const breakEvenMonths = price / monthlyNetProfit;
+            const roi = ((monthlyNetProfit * 36) + resale - price) / price * 100;
+            
+            document.getElementById('adv-revenue').textContent = '$' + monthlyRevenue.toFixed(2);
+            document.getElementById('adv-variable-costs').textContent = '$' + variableCosts.toFixed(2);
+            document.getElementById('adv-profit').textContent = '$' + monthlyNetProfit.toFixed(2);
+            document.getElementById('adv-breakeven').textContent = breakEvenMonths.toFixed(1) + ' months';
+            document.getElementById('adv-roi').textContent = roi.toFixed(1) + '%';
+            document.getElementById('advanced-results').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
